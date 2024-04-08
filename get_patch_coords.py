@@ -17,9 +17,10 @@ def read_ply(file_name,n_edges=3):
     
         Protein Connolly surface output file from EDTsurf in .ply format
         
-    n_edges : int
+    n_edges : int, optional
         
-        Number of edges on each face of the mesh (Default=3 for triangular mesh)
+        Number of edges on each face of the mesh.
+        The default is 3. (triangular mesh)
 
     Returns
     -------
@@ -58,7 +59,7 @@ def read_ply(file_name,n_edges=3):
 
 #%%
 
-def make_surface_patches(surface_points,protein_name="patch",n_patches=1,patch_radius=8,atom_centers=None):
+def make_surface_patches(surface_points,n_patches=1,patch_radius=8,atom_centers=None):
     
     """
     
@@ -67,7 +68,7 @@ def make_surface_patches(surface_points,protein_name="patch",n_patches=1,patch_r
     surface_points : numpy array of float
         
         Coordinates (and opt. color code) of protein surface points.
-        Recommended to use vertices output from read_ply(). 
+        Recommended to use vertices output from read_ply().
         
     n_patches : int, optional
         
@@ -85,10 +86,11 @@ def make_surface_patches(surface_points,protein_name="patch",n_patches=1,patch_r
 
     Returns
     -------
-    None
-        This function creates text files {protein_name}_{centerpoint_index}.txt
-        with coordinates of all surface points (and opt atom centers) within patch_radius
-        of n_patches unique random surface points
+    patch_dict : dict of numpy array
+    
+        The dictionary contains the coordinates of all surface points (and opt
+        atom centers) within patch_radius of a random surface point.
+        Dictionary entries are named by the centerpoint_index of each patch.
 
     """
     
@@ -97,6 +99,8 @@ def make_surface_patches(surface_points,protein_name="patch",n_patches=1,patch_r
 
     rng = default_rng(42) # seed=42 for reproducibility
     patch_center = rng.choice(len(surface_points), size=n_patches, replace=False)
+    
+    patch_dict = {}
     
     for centerpoint_index in patch_center:
 
@@ -121,10 +125,9 @@ def make_surface_patches(surface_points,protein_name="patch",n_patches=1,patch_r
                     patch.append(i)
                 
         patch = np.asarray(patch)
-        
-        np.savetxt(f"{protein_name}_{centerpoint_index}.txt",patch,fmt='%.3f')
+        patch_dict[centerpoint_index] = patch
     
-    return None
+    return patch_dict
 
 #%% including atom coordinates
 
