@@ -7,28 +7,18 @@ Created on Thu Oct 26 03:08:46 2023
 
 #%%
 
-def zernike3d(x,y,z,N=20):
+def zernike3d(voxels,N=20):
     
     """
 
     Parameters
     ----------
-    x : float
+    X : numpy array of float
     
-        The x coordinate of the point at which to calculate the value of the 
+        The coordinates of the points at which to calculate the value of the 
         3D Zernike function.
         
-    y : float
-        
-        The y coordinate of the point at which to calculate the value of the 
-        3D Zernike function.
-        
-    z : float
-    
-        The z coordinate of the point at which to calculate the value of the 
-        3D Zernike function.
-        
-    N : TYPE
+    n : int, optional
     
         Order of approximation of the 3D Zernike function. Higher order provides
         higher resolution but scales computation exponentially. The default is 20.
@@ -43,14 +33,14 @@ def zernike3d(x,y,z,N=20):
     """
     
     import math
+    import numpy as np
 
-    r = (x**2 + y**2 + z**2)**.5
+    r = (voxels[:,0]**2 + voxels[:,1]**2 + voxels[:,2]**2)**.5
+
     Z = []
-    
-    for n in range(N+1): # n goes from 0 to order N
+    for n in range(0,N+1):
         for l in range(n+1): # l goes from 0 to n
             if ((n-l)%2) == 0: # (n-l) even
-    
                 qsum = 0
                 k = int((n-l)/2) # 2k = n - l
                 
@@ -78,13 +68,91 @@ def zernike3d(x,y,z,N=20):
                             comb = 0
                         else:
                             comb = math.comb((l-u),(m+u))
-                        
-                        usum += math.comb(l,u)*comb*((-(x**2 + y**2)/(4*z**2))**u)
+                        usum += math.comb(l,u)*comb*((-(voxels[:,0]**2 + voxels[:,1]**2)/(4*voxels[:,2]**2))**u)
                     
                     # eqn 5
-                    elm = rl*clm*(((1j*x-y)/2)**m)*(z**(l-m))*usum 
+                    elm = rl*clm*(((1j*voxels[:,0]-voxels[:,1])/2)**m)*(voxels[:,2]**(l-m))*usum 
                     # eqn 7
                     Znlm = elm*qsum 
                     Z.append(Znlm)
+    Z = np.asarray(Z).T
     return Z
         
+#%%
+
+def voxelize(scaled_patch,gridpoints=20):
+    """
+    
+    Parameters
+    ----------
+    scaled_patch : numpy array of float
+    
+        DESCRIPTION.
+        
+    gridpoints : int, optional
+    
+        DESCRIPTION. The default is 20.
+
+    Returns
+    -------
+    voxels : list of float
+    
+        DESCRIPTION.
+        
+    voxel_surf: numpy array of int
+    
+        DESCRIPTION.
+
+    """
+    
+    import numpy as np
+    
+    x = np.linspace(-1,1,gridpoints)
+    voxels = [[i,j,k] for i in x for j in x for k in x if i**2 + j**2 + k**2 <= 1]
+    
+    voxel_surf = voxel_surface(scaled_patch,voxels,gridpoints)
+    
+    #TODO
+    #voxel_feat = voxel_features(scaled_patch,features,voxels,gridpoints)
+    
+    return voxels, voxel_surf
+
+
+def voxel_surface(scaled_patch,voxels,gridpoints):
+    """
+    
+    Parameters
+    ----------
+    scaled_patch : TYPE
+    
+        DESCRIPTION.
+        
+    voxels : TYPE
+    
+        DESCRIPTION.
+        
+    gridpoints : TYPE
+    
+        DESCRIPTION.
+
+    Returns
+    -------
+    voxel_surf : TYPE
+    
+        DESCRIPTION.
+
+    """
+
+    import numpy as np    
+
+    voxel_spacing = 1/(gridpoints-1)
+    
+    voxel_surf = np.zeros(len(voxels))
+    for v_coords in voxels:
+        for p_coords in scaled_patch:
+            if abs(v_coords[0] - p_coords[0]) < voxel_spacing:
+                if abs(v_coords[1] - p_coords[1]) < voxel_spacing:
+                    if abs(v_coords[2] - p_coords[2]) < voxel_spacing:
+                        voxel_surf[voxels.index(v_coords)] = 1
+                        continue
+    return voxel_surf

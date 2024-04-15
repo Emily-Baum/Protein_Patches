@@ -54,7 +54,7 @@ def read_ply(file_name,n_edges=3):
         else:
             faces.append(f) # rows with face information
 
-    return np.asarray(vertices), np.asarray(faces)
+    return vertices, np.asarray(faces)
 
 
 #%%
@@ -86,7 +86,7 @@ def make_surface_patches(surface_points,n_patches=1,patch_radius=8,atom_centers=
 
     Returns
     -------
-    patch_dict : dict of numpy array
+    patch_dict : dict of numpy arrays
     
         The dictionary contains the coordinates of all surface points (and opt
         atom centers) within patch_radius of a random surface point.
@@ -108,6 +108,8 @@ def make_surface_patches(surface_points,n_patches=1,patch_radius=8,atom_centers=
         
         # calculate which points are within the patch radius
         for i in surface_points: 
+            if i == surface_points[centerpoint_index]:
+                continue
             r = ((surface_points[centerpoint_index][0] - i[0])**2 + 
                  (surface_points[centerpoint_index][1] - i[1])**2 + 
                  (surface_points[centerpoint_index][2] - i[2])**2)**.5
@@ -124,7 +126,6 @@ def make_surface_patches(surface_points,n_patches=1,patch_radius=8,atom_centers=
                 if r <= patch_radius:
                     patch.append(i)
         
-        patch = set(patch)
         patch = np.asarray(patch)
         
         patch_dict[centerpoint_index] = patch
@@ -169,18 +170,45 @@ def get_atom_centers(file_name):
     
     return atom_centers
 
-   
-#%% 
+#%%
 
-if __name__ == "__main__":
+def scale_patch(patch_dict,patch_radius=8):
     
+    """
 
+    Parameters
+    ----------
+    patch_dict : dict of numpy arrays
+    
+        The dictionary contains the coordinates of all surface points (and opt
+        atom centers) within patch_radius of a random surface point.
+        Dictionary entries are named by the centerpoint_index of each patch.
+        
+    patch_radius : float, optional
+    
+        The radius of the generated protein patch in Angstroms. The default is 8.
+
+    Returns
+    -------
+    scaled_dict : dict of numpy arrays
+    
+        The dictionary contains the scaled coordinates of all surface points
+        (and opt atom centers) within patch_radius of a random surface point.
+        Dictionary entries are named by the centerpoint_index of each patch.
+        Coordinates must be scaled into a unit sphere for the 3D Zernike function.
+
+    """
+    
     import numpy as np
-    np.random.seed(42)
-    v, f = read_ply("1kem.ply")
-    k = make_surface_patches(v)
+    
+    scaled_dict = {}
+    
+    for patch in patch_dict.keys():
+        scaled_patch = []
+        for point in patch_dict[patch]:
+            scaled_point = (point - patch_dict[patch][0])/patch_radius
+            scaled_patch.append(scaled_point)
+        scaled_patch = np.asarray(scaled_patch)
+        scaled_dict[patch] = scaled_patch
 
-    
-    
-    
-    
+    return scaled_dict
