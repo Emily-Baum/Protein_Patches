@@ -5,6 +5,7 @@ The code in this repository creates protein surface patches and represents them 
 # Using this Code
 
 Assuming you are on linux, to create a ply file for use with the Protein_Patches package: \
+If you are not on linux, the setup may be different from the steps below. \
 Install EDTSurf (available here - https://zhanggroup.org/EDTSurf/) \
 Run the following command: \
 chmod +x EDTSurf \
