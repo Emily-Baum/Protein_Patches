@@ -4,7 +4,7 @@ The code in this repository creates protein surface patches and represents them 
 
 # Dependencies:
 numpy \
-math 3.8 or greater \
+math 3.8 (python 3.8) or greater \
 EDTSurf (https://zhanggroup.org/EDTSurf/) \
 BioPython (https://biopython.org/)
 
