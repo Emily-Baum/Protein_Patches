@@ -31,7 +31,7 @@ def zernike_polynomials(voxels,N=20):
     Z : numpy array of float
     
         Calculates the value of the 3D Zernike function at a given set of coordinates 
-        within a unit sphere. Equations numbers follow: https://doi.org/10.1002/prot.22030.
+        within a unit sphere. Equation numbers follow: https://doi.org/10.1002/prot.22030.
 
     """
     
@@ -109,7 +109,7 @@ def voxelize(scaled_patch,gridpoints=20,feature_array=None):
     -------
     voxels : list of float
     
-        The coordinates of each voxel certerpoint.
+        The coordinates of each voxel centerpoint.
         
     voxel_surf: numpy array of int
     
@@ -155,7 +155,7 @@ def voxel_surface(scaled_patch,voxels,gridpoints):
         
     voxels : list of float
     
-        The coordinates of each voxel certerpoint.
+        The coordinates of each voxel centerpoint.
         
     gridpoints : int
     
@@ -209,7 +209,7 @@ def voxel_features(scaled_patch,feature_array,voxels,gridpoints):
         
     voxels : list of float
     
-        The coordinates of each voxel certerpoint.
+        The coordinates of each voxel centerpoint.
         
     gridpoints : int
     
@@ -347,7 +347,7 @@ def zernike_descriptor(moments,N=20):
     
         A compact, non-redundant, rotationally invariant descriptor used to 
         represent protein surface patches.
-        Equations numbers follow: https://doi.org/10.1002/prot.22030.
+        Equation numbers follow: https://doi.org/10.1002/prot.22030.
 
     """
     
