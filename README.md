@@ -21,7 +21,7 @@ If you work directly with the jupyter notebook, ensure that your_file_name.ply a
 # Dependencies:
 numpy (1.21.5) \
 math 3.8 (python 3.8) \
-BioPython (https://biopython.org/) \
+BioPython (1.78) (https://biopython.org/) \
 EDTSurf (https://zhanggroup.org/EDTSurf/)
 
 # Questions?
